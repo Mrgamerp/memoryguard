@@ -4,11 +4,10 @@
 
 [![Tests](https://github.com/SHAdd0WTAka/memoryguard/actions/workflows/tests.yml/badge.svg)](https://github.com/SHAdd0WTAka/memoryguard/actions/workflows/tests.yml)
 [![Docker](https://github.com/SHAdd0WTAka/memoryguard/actions/workflows/docker.yml/badge.svg)](https://github.com/SHAdd0WTAka/memoryguard/actions/workflows/docker.yml)
-[![Python 3.8+](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)
+[![PyPI](https://img.shields.io/pypi/v/memoryguard.svg)](https://pypi.org/project/memoryguard/)
+[![Python](https://img.shields.io/pypi/pyversions/memoryguard.svg)](https://pypi.org/project/memoryguard/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![PyPI](https://img.shields.io/badge/pypi-v1.0.0-blue.svg)](https://pypi.org/project/memoryguard/)
 [![Docker](https://img.shields.io/badge/docker-ghcr.io-blue.svg)](https://ghcr.io/shadd0wtaka/memoryguard)
-[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 
 Drop-in memory monitoring for any Python project. Track memory usage, detect leaks, profile tools, and integrate with Valgrind - all with minimal overhead.
 
