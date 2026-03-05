@@ -1,0 +1,16 @@
+name: Minimal
+
+on: [push]
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
+    - run: python --version
+    - run: pip install psutil
+    - run: python -c "import psutil; print('psutil OK')"
+    - run: python -c "import sys; sys.path.insert(0, '.'); import memoryguard; print('memoryguard OK')"
